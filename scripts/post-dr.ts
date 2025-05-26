@@ -9,7 +9,7 @@ async function main() {
     const signingConfig = buildSigningConfig({});
     const signer = await Signer.fromPartial(signingConfig);
 
-    console.log('Posting and waiting for a result, this may take a lil while..');
+    console.log('Posting and waiting for a result, this may take a little while..');
 
     const dataRequestInput: PostDataRequestInput = {
         consensusOptions: {
