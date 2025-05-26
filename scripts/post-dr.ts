@@ -22,7 +22,7 @@ async function main() {
     };
 
     const result = await postAndAwaitDataRequest(signer, dataRequestInput, {});
-    const explorerLink = process.env.SEDA_EXPLORER_ENDPOINT ? process.env.SEDA_EXPLORER_ENDPOINT + `/data-requests/${result.drId}/${result.drBlockHeight}` : "Configure env.SEDA_EXPLORER_ENDPOINT to generate a link to your DR";
+    const explorerLink = process.env.SEDA_EXPLORER_URL ? process.env.SEDA_EXPLORER_URL + `/data-requests/${result.drId}/${result.drBlockHeight}` : "Configure env.SEDA_EXPLORER_URL to generate a link to your DR";
 
     console.table({
         ...result,
