@@ -112,7 +112,7 @@ priceFeedScope
       await priceFeed.waitForDeployment();
       const priceFeedAddress = await priceFeed.getAddress();
 
-      console.log('\nPriceFeed·deployed·successfully:');
+      console.log('\nPriceFeed deployed successfully:');
       console.log(`- Contract Address: ${priceFeedAddress}`);
       console.log(`- SEDA Core Address: ${coreAddress}`);
       console.log(`- Oracle Program ID: ${oracleProgramId}`);

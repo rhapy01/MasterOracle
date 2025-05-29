@@ -15,6 +15,11 @@ const config: HardhatUserConfig = {
       url: 'https://sepolia.base.org',
       chainId: 84532,
     },
+    superseedSepolia: {
+      accounts: process.env.EVM_PRIVATE_KEY ? [process.env.EVM_PRIVATE_KEY] : [],
+      url: 'https://sepolia.superseed.xyz',
+      chainId: 53302,
+    },
   },
   etherscan: {
     apiKey: process.env.BASE_SEPOLIA_ETHERSCAN_API_KEY || '',
