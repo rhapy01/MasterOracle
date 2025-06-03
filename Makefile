@@ -13,9 +13,7 @@ check:
 	cargo clippy --all-features --locked -- -D warnings
 
 build:
-	cargo build --target wasm32-wasip1 --profile release-wasm
-	wasm-strip target/wasm32-wasip1/release-wasm/oracle-program.wasm;
-	wasm-opt -Oz --enable-bulk-memory target/wasm32-wasip1/release-wasm/oracle-program.wasm -o target/wasm32-wasip1/release-wasm/oracle-program.wasm;
+	cargo build --target wasm32-wasi --profile release-wasm
 
 install-tools:
 	bun install

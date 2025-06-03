@@ -1,32 +1,40 @@
 {
-  "name": "seda-starter-kit",
+  "name": "master-oracle",
   "version": "1.0.0-rc.3",
-  "description": "Starter kit for building and deploying SEDA oracle data requests with EVM integration",
+  "description": "Master Oracle - Advanced multi-source SEDA oracle with TwelveData, Alpha Vantage, and FMP integration",
   "type": "module",
   "scripts": {
-    "build": "make build",
-    "deploy": "bun run build && bunx seda-sdk oracle-program upload ./target/wasm32-wasip1/release-wasm/oracle-program.wasm",
+    "build": "cargo build --target wasm32-wasi --profile release-wasm",
+    "deploy": "bun run build && bunx seda-sdk oracle-program upload ./target/wasm32-wasi/release-wasm/master-oracle.wasm",
     "post-dr": "bun run ./scripts/post-dr.ts",
     "test": "bun run build && bun test"
   },
   "keywords": [
+    "master-oracle",
     "seda",
     "blockchain",
     "oracle",
-    "data-request",
+    "stocks",
+    "indices",
+    "stock-market",
+    "alpha-vantage",
+    "twelve-data",
+    "financial-modeling-prep",
+    "multi-source",
+    "cross-validation",
     "wasm",
-    "ethereum",
-    "evm"
+    "finance",
+    "trading"
   ],
   "license": "MIT",
   "devDependencies": {
-    "@seda-protocol/dev-tools": "^1.0.0-rc.9",
-    "@types/bun": "^1.2.13",
+    "@seda-protocol/dev-tools": "^1.0.0-rc.12",
+    "@types/bun": "^1.2.15",
     "bignumber.js": "^9.3.0",
     "binaryen": "^123.0.0",
     "wabt": "^1.0.37"
   },
   "dependencies": {
-    "@seda-protocol/vm": "^1.0.7"
+    "@seda-protocol/vm": "^1.0.9"
   }
 }

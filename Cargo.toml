@@ -1,7 +1,12 @@
 [package]
-name = "oracle-program"
-version = "0.1.0"
+name = "master-oracle"
+version = "0.2.0"
 edition = "2021"
+description = "Master Oracle - Advanced multi-source SEDA oracle with TwelveData, Alpha Vantage, and FMP integration, featuring cross-validation and intelligent fallback systems"
+license = "MIT"
+repository = "https://github.com/sedaprotocol/seda-oracle-master"
+keywords = ["oracle", "seda", "defi", "stocks", "prices", "master"]
+categories = ["finance", "api-bindings", "web-programming"]
 
 [dependencies]
 anyhow = "1.0.95"
@@ -13,3 +18,4 @@ seda-sdk-rs = { git = "https://github.com/sedaprotocol/seda-sdk", tag = "rs-sdk/
 inherits = "release"
 lto = "fat"
 opt-level = "z"
+codegen-units = 1
