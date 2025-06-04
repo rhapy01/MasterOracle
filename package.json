@@ -7,6 +7,12 @@
     "build": "cargo build --target wasm32-wasi --profile release-wasm",
     "deploy": "bun run build && bunx seda-sdk oracle-program upload ./target/wasm32-wasi/release-wasm/master-oracle.wasm",
     "post-dr": "bun run ./scripts/post-dr.ts",
+    "post-multiple-dr": "bun run ./scripts/post-multiple-dr.ts",
+    "quick-10-stocks": "bun run ./scripts/quick-10-stocks.ts",
+    "quick-10-indices": "bun run ./scripts/quick-10-indices.ts",
+    "dashboard": "node ./dashboard/server.cjs",
+    "start-dashboard": "echo 'Starting SEDA Oracle Dashboard...' && node ./dashboard/server.cjs",
+    "integrate-data": "node ./dashboard/data-integration.cjs",
     "test": "bun run build && bun test"
   },
   "keywords": [
@@ -35,6 +41,8 @@
     "wabt": "^1.0.37"
   },
   "dependencies": {
-    "@seda-protocol/vm": "^1.0.9"
+    "@seda-protocol/vm": "^1.0.9",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
   }
 }

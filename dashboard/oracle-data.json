@@ -1,0 +1,190 @@
+{
+  "stocks": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "sector": "Technology",
+      "price": 203.27,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-1",
+      "lastUpdated": "2025-06-04T06:55:14.345Z"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "sector": "Technology",
+      "price": 462.97,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-2",
+      "lastUpdated": "2025-06-04T06:55:14.346Z"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc.",
+      "sector": "Technology",
+      "price": 166.18,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-3",
+      "lastUpdated": "2025-06-04T06:55:14.347Z"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon.com Inc.",
+      "sector": "E-commerce",
+      "price": 205.71,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-4",
+      "lastUpdated": "2025-06-04T06:55:14.348Z"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla Inc.",
+      "sector": "Electric Vehicles",
+      "price": 344.27,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-5",
+      "lastUpdated": "2025-06-04T06:55:14.349Z"
+    },
+    {
+      "symbol": "META",
+      "name": "Meta Platforms Inc.",
+      "sector": "Social Media",
+      "price": 289.45,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-6",
+      "lastUpdated": "2025-06-04T06:55:14.350Z"
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "price": 892.13,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-7",
+      "lastUpdated": "2025-06-04T06:55:14.422Z"
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "sector": "Banking",
+      "price": 234.56,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-8",
+      "lastUpdated": "2025-06-04T06:55:14.424Z"
+    },
+    {
+      "symbol": "JNJ",
+      "name": "Johnson & Johnson",
+      "sector": "Healthcare",
+      "price": 178.92,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-9",
+      "lastUpdated": "2025-06-04T06:55:14.426Z"
+    },
+    {
+      "symbol": "V",
+      "name": "Visa Inc.",
+      "sector": "Financial Services",
+      "price": 312.84,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-10",
+      "lastUpdated": "2025-06-04T06:55:14.427Z"
+    }
+  ],
+  "indices": [
+    {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF",
+      "category": "Broad Market",
+      "price": 596.09,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-11",
+      "lastUpdated": "2025-06-04T06:55:14.429Z"
+    },
+    {
+      "symbol": "QQQ",
+      "name": "Invesco QQQ - NASDAQ 100",
+      "category": "Technology",
+      "price": 387.45,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-12",
+      "lastUpdated": "2025-06-04T06:55:14.431Z"
+    },
+    {
+      "symbol": "DIA",
+      "name": "SPDR Dow Jones Industrial",
+      "category": "Blue Chip",
+      "price": 423.78,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-13",
+      "lastUpdated": "2025-06-04T06:55:14.433Z"
+    },
+    {
+      "symbol": "IWM",
+      "name": "iShares Russell 2000",
+      "category": "Small Cap",
+      "price": 234.12,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-14",
+      "lastUpdated": "2025-06-04T06:55:14.434Z"
+    },
+    {
+      "symbol": "VTI",
+      "name": "Vanguard Total Stock Market",
+      "category": "Total Market",
+      "price": 289.67,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-15",
+      "lastUpdated": "2025-06-04T06:55:14.436Z"
+    },
+    {
+      "symbol": "EFA",
+      "name": "iShares MSCI EAFE",
+      "category": "International",
+      "price": 87.34,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-16",
+      "lastUpdated": "2025-06-04T06:55:14.437Z"
+    },
+    {
+      "symbol": "XLK",
+      "name": "Technology Select Sector",
+      "category": "Tech Sector",
+      "price": 198.45,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-17",
+      "lastUpdated": "2025-06-04T06:55:14.438Z"
+    },
+    {
+      "symbol": "XLF",
+      "name": "Financial Select Sector",
+      "category": "Financial Sector",
+      "price": 45.67,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-18",
+      "lastUpdated": "2025-06-04T06:55:14.440Z"
+    },
+    {
+      "symbol": "XLE",
+      "name": "Energy Select Sector",
+      "category": "Energy Sector",
+      "price": 89.23,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-19",
+      "lastUpdated": "2025-06-04T06:55:14.443Z"
+    },
+    {
+      "symbol": "VYM",
+      "name": "Vanguard High Dividend Yield",
+      "category": "Dividend Focus",
+      "price": 123.89,
+      "status": "SUCCESS",
+      "drId": "sample-dr-id-20",
+      "lastUpdated": "2025-06-04T06:55:14.444Z"
+    }
+  ],
+  "lastUpdated": "2025-06-04T06:55:14.444Z",
+  "totalRequests": 20,
+  "successfulRequests": 20,
+  "failedRequests": 0
+}

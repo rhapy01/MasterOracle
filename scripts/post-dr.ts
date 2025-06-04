@@ -12,9 +12,23 @@ async function main() {
     console.log('🚀 Posting stock/index price data request using Alpha Vantage API...');
     console.log('This may take a little while to complete...\n');
 
-    // You can change to any stock symbol or ETF/index
-    // Examples: 'AAPL', 'GOOGL', 'MSFT', 'SPY' (S&P 500), 'QQQ' (NASDAQ), 'DIA' (Dow Jones)
-    const stockSymbol = 'AAPL'; // Fetching Apple stock price in USD
+    // Get symbol from command line argument or use default
+    const stockSymbol = process.argv[2] || 'AAPL'; // Fetching stock price in USD
+    
+    // Map of symbols to descriptions for better display
+    const symbolDescriptions: { [key: string]: string } = {
+        'AAPL': 'Apple Inc. (Individual Stock)',
+        'MSFT': 'Microsoft Corporation (Individual Stock)',
+        'GOOGL': 'Alphabet Inc. (Individual Stock)',
+        'SPY': 'SPDR S&P 500 ETF (Market Index)',
+        'QQQ': 'Invesco QQQ ETF - NASDAQ 100 (Tech Index)',
+        'DIA': 'SPDR Dow Jones Industrial Average ETF (Dow Index)'
+    };
+
+    const description = symbolDescriptions[stockSymbol.toUpperCase()] || `${stockSymbol.toUpperCase()} (Stock/Index)`;
+
+    console.log(`📊 Requesting data for: ${stockSymbol.toUpperCase()}`);
+    console.log(`📝 Description: ${description}\n`);
 
     const dataRequestInput: PostDataRequestInput = {
         consensusOptions: {
@@ -30,10 +44,12 @@ async function main() {
     const explorerLink = process.env.SEDA_EXPLORER_URL ? process.env.SEDA_EXPLORER_URL + `/data-requests/${result.drId}/${result.drBlockHeight}` : "Configure env.SEDA_EXPLORER_URL to generate a link to your DR";
 
     console.log(`\n✅ Data Request Completed for ${stockSymbol.toUpperCase()}!`);
-    console.log(`💰 Price: $${(Number(result.result) / 1000000).toFixed(2)} USD\n`);
+    console.log(`💰 Price: $${(Number(result.result) / 1000000).toFixed(2)} USD`);
+    console.log(`📈 Asset Type: ${description}`);
     
     console.table({
-        symbol: stockSymbol,
+        symbol: stockSymbol.toUpperCase(),
+        description: description,
         priceUSD: `$${(Number(result.result) / 1000000).toFixed(2)}`,
         drId: result.drId,
         blockHeight: result.drBlockHeight,

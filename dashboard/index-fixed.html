@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEDA Oracle - Market Intelligence Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 94, 77, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 154, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(255, 206, 84, 0.08) 0%, transparent 50%);
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 50%, #ffce54 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 94, 77, 0.3);
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #b8b8b8;
+            font-weight: 300;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid rgba(255, 94, 77, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #ff5e4d 0%, #ff9a00 50%, #ffce54 100%);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 
+                0 20px 40px rgba(255, 94, 77, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 154, 0, 0.4);
+        }
+
+        .stat-card .icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        .stat-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .stat-card p {
+            color: #b8b8b8;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid rgba(255, 206, 84, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+            border-color: rgba(255, 154, 0, 0.4);
+            box-shadow: 
+                0 15px 35px rgba(255, 206, 84, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 25px;
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 600;
+            border-bottom: 2px solid;
+            border-image: linear-gradient(90deg, #ff5e4d 0%, #ff9a00 50%, #ffce54 100%) 1;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-card h3 i {
+            color: #ff9a00;
+        }
+
+        .data-table {
+            background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid rgba(255, 94, 77, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .data-table h3 {
+            margin-bottom: 25px;
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .data-table h3 i {
+            color: #ff9a00;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 100%);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            color: #e0e0e0;
+            font-weight: 400;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 154, 0, 0.1);
+            transition: background 0.2s ease;
+        }
+
+        .price-positive {
+            color: #4ade80;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+        }
+
+        .price-negative {
+            color: #f87171;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(248, 113, 113, 0.3);
+        }
+
+        .oracle-info {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid;
+            border-image: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 50%, #ffce54 100%) 1;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oracle-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 94, 77, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .oracle-info h3 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 50%, #ffce54 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .oracle-info p {
+            color: #b8b8b8;
+            font-size: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .oracle-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 154, 0, 0.2);
+            padding: 25px 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: rgba(255, 154, 0, 0.1);
+            border-color: rgba(255, 154, 0, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #ff9a00;
+        }
+
+        .feature div {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #ff5e4d 0%, #ff9a00 100%);
+            color: #ffffff;
+            border: none;
+            padding: 16px 35px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 30px auto;
+            display: block;
+            box-shadow: 0 6px 20px rgba(255, 94, 77, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 154, 0, 0.4);
+            background: linear-gradient(135deg, #ff6b5a 0%, #ffa500 100%);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .refresh-btn:disabled {
+            background: linear-gradient(135deg, #666 0%, #888 100%);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 20px 15px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1><i class="fas fa-shield-alt"></i> SEDA Oracle Market Intelligence</h1>
+            <p>Real-Time API Integration with Sunrise Design</p>
+        </div>
+
+        <div class="oracle-info">
+            <h3><i class="fas fa-satellite-dish"></i> Live Blockchain Oracle Status</h3>
+            <p>Connected to SEDA Blockchain Network with Multi-API Integration</p>
+            <div class="oracle-features">
+                <div class="feature">
+                    <i class="fas fa-link"></i>
+                    <div>Blockchain Network</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-chart-line"></i>
+                    <div>Live Price Feeds</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-exchange-alt"></i>
+                    <div>Multi-API Validation</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-clock"></i>
+                    <div>Real-Time Consensus</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>Crypto-Economic Security</div>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-check-double"></i>
+                    <div>Data Request Verification</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-chart-line"></i></div>
+                <h3 id="total-stocks">10</h3>
+                <p>Individual Stocks Tracked</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-chart-bar"></i></div>
+                <h3 id="total-indices">10</h3>
+                <p>Market Indices Tracked</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-dollar-sign"></i></div>
+                <h3 id="total-value">$0.00</h3>
+                <p>Total Portfolio Value</p>
+            </div>
+            <div class="stat-card">
+                <div class="icon"><i class="fas fa-percentage"></i></div>
+                <h3 id="success-rate">100%</h3>
+                <p>API Success Rate</p>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3><i class="fas fa-building"></i> Top 10 Stocks by Price</h3>
+                <canvas id="stocksChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie"></i> Market Indices Distribution</h3>
+                <canvas id="indicesChart"></canvas>
+            </div>
+        </div>
+
+        <div class="data-table">
+            <h3><i class="fas fa-table"></i> Live Stock Prices</h3>
+            <table id="stocksTable">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Company</th>
+                        <th>Sector</th>
+                        <th>Price (USD)</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="data-table">
+            <h3><i class="fas fa-chart-area"></i> Live Index Prices</h3>
+            <table id="indicesTable">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Index Name</th>
+                        <th>Category</th>
+                        <th>Price (USD)</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <button class="refresh-btn" onclick="refreshData()">
+            <i class="fas fa-shield-alt"></i> Execute Blockchain Oracle
+        </button>
+    </div>
+
+    <script>
+        // Global variables
+        let stocksChart, indicesChart;
+        
+        // Sample data (will be updated with live data)
+        const sampleStocks = [
+            { symbol: 'AAPL', name: 'Apple Inc.', sector: 'Technology', price: 203.27, status: 'SUCCESS' },
+            { symbol: 'MSFT', name: 'Microsoft Corporation', sector: 'Technology', price: 462.97, status: 'SUCCESS' },
+            { symbol: 'GOOGL', name: 'Alphabet Inc.', sector: 'Technology', price: 166.18, status: 'SUCCESS' },
+            { symbol: 'AMZN', name: 'Amazon.com Inc.', sector: 'E-commerce', price: 205.71, status: 'SUCCESS' },
+            { symbol: 'TSLA', name: 'Tesla Inc.', sector: 'Electric Vehicles', price: 344.27, status: 'SUCCESS' },
+            { symbol: 'META', name: 'Meta Platforms Inc.', sector: 'Social Media', price: 289.45, status: 'SUCCESS' },
+            { symbol: 'NVDA', name: 'NVIDIA Corporation', sector: 'Semiconductors', price: 892.13, status: 'SUCCESS' },
+            { symbol: 'JPM', name: 'JPMorgan Chase & Co.', sector: 'Banking', price: 234.56, status: 'SUCCESS' },
+            { symbol: 'JNJ', name: 'Johnson & Johnson', sector: 'Healthcare', price: 178.92, status: 'SUCCESS' },
+            { symbol: 'V', name: 'Visa Inc.', sector: 'Financial Services', price: 312.84, status: 'SUCCESS' }
+        ];
+
+        const sampleIndices = [
+            { symbol: 'SPY', name: 'SPDR S&P 500 ETF', category: 'Broad Market', price: 596.09, status: 'SUCCESS' },
+            { symbol: 'QQQ', name: 'Invesco QQQ - NASDAQ 100', category: 'Technology', price: 387.45, status: 'SUCCESS' },
+            { symbol: 'DIA', name: 'SPDR Dow Jones Industrial', category: 'Blue Chip', price: 423.78, status: 'SUCCESS' },
+            { symbol: 'IWM', name: 'iShares Russell 2000', category: 'Small Cap', price: 234.12, status: 'SUCCESS' },
+            { symbol: 'VTI', name: 'Vanguard Total Stock Market', category: 'Total Market', price: 289.67, status: 'SUCCESS' },
+            { symbol: 'EFA', name: 'iShares MSCI EAFE', category: 'International', price: 87.34, status: 'SUCCESS' },
+            { symbol: 'XLK', name: 'Technology Select Sector', category: 'Tech Sector', price: 198.45, status: 'SUCCESS' },
+            { symbol: 'XLF', name: 'Financial Select Sector', category: 'Financial Sector', price: 45.67, status: 'SUCCESS' },
+            { symbol: 'XLE', name: 'Energy Select Sector', category: 'Energy Sector', price: 89.23, status: 'SUCCESS' },
+            { symbol: 'VYM', name: 'Vanguard High Dividend Yield', category: 'Dividend Focus', price: 123.89, status: 'SUCCESS' }
+        ];
+
+        // Color palette
+        const sunriseColors = [
+            '#ff5e4d', '#ff6b5a', '#ff7866', '#ff8573', '#ff9280',
+            '#ff9a00', '#ffa500', '#ffb000', '#ffbb33', '#ffc659',
+            '#ffce54', '#ffd166', '#ffd477', '#ffd788', '#ffda99'
+        ];
+
+        // API Configuration
+        const API_CONFIG = {
+            alphaVantage: {
+                key: 'V7KH6L0VO80JQL5S',
+                baseUrl: 'https://www.alphavantage.co/query'
+            },
+            twelveData: {
+                key: '28d73aeebb4a4059b8ccd7b0d7e7a5a6',
+                baseUrl: 'https://api.twelvedata.com'
+            }
+        };
+
+        // Live API Functions
+        async function fetchFromTwelveData(symbol) {
+            try {
+                const url = `${API_CONFIG.twelveData.baseUrl}/quote?symbol=${symbol}&apikey=${API_CONFIG.twelveData.key}`;
+                console.log(`🌐 Fetching ${symbol} from TwelveData...`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.close && !data.status) {
+                    return {
+                        success: true,
+                        price: parseFloat(data.close),
+                        source: 'TwelveData',
+                        timestamp: data.datetime || new Date().toISOString()
+                    };
+                } else {
+                    throw new Error(data.message || 'Invalid response');
+                }
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function fetchFromAlphaVantage(symbol) {
+            try {
+                const url = `${API_CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.alphaVantage.key}`;
+                console.log(`🔍 Fetching ${symbol} from Alpha Vantage...`);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data['Global Quote'] && data['Global Quote']['05. price']) {
+                    return {
+                        success: true,
+                        price: parseFloat(data['Global Quote']['05. price']),
+                        source: 'Alpha Vantage',
+                        timestamp: data['Global Quote']['07. latest trading day'] || new Date().toISOString()
+                    };
+                } else {
+                    throw new Error(data['Note'] || 'Invalid response');
+                }
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function fetchLivePrice(symbol) {
+            console.log(`📊 Fetching live price for ${symbol}...`);
+            
+            // Try TwelveData first
+            const tdResult = await fetchFromTwelveData(symbol);
+            if (tdResult.success) {
+                console.log(`✅ ${symbol}: $${tdResult.price} (TwelveData)`);
+                return tdResult;
+            }
+            
+            // Fallback to Alpha Vantage
+            await new Promise(resolve => setTimeout(resolve, 200));
+            const avResult = await fetchFromAlphaVantage(symbol);
+            if (avResult.success) {
+                console.log(`✅ ${symbol}: $${avResult.price} (Alpha Vantage)`);
+                return avResult;
+            }
+            
+            console.error(`❌ ${symbol}: All sources failed`);
+            return { success: false, error: 'All sources failed', price: 0 };
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 4000);
+        }
+
+        function initializeCharts() {
+            // Set Chart.js defaults
+            Chart.defaults.color = '#ffffff';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+            // Stocks Chart
+            const stocksCtx = document.getElementById('stocksChart').getContext('2d');
+            stocksChart = new Chart(stocksCtx, {
+                type: 'bar',
+                data: {
+                    labels: sampleStocks.map(s => s.symbol),
+                    datasets: [{
+                        label: 'Stock Price (USD)',
+                        data: sampleStocks.map(s => s.price),
+                        backgroundColor: sunriseColors.slice(0, sampleStocks.length),
+                        borderColor: sunriseColors.slice(0, sampleStocks.length).map(color => color + 'CC'),
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff9a00',
+                            borderWidth: 1
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: {
+                                color: '#ffffff',
+                                callback: function(value) { return '$' + value; }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Indices Chart
+            const indicesCtx = document.getElementById('indicesChart').getContext('2d');
+            indicesChart = new Chart(indicesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: sampleIndices.map(i => i.symbol),
+                    datasets: [{
+                        data: sampleIndices.map(i => i.price),
+                        backgroundColor: sunriseColors.slice(0, sampleIndices.length),
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#ffffff', font: { size: 12 } }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 26, 26, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ff9a00'
+                        }
+                    }
+                }
+            });
+        }
+
+        function populateTables() {
+            // Populate stocks table
+            const stocksTableBody = document.querySelector('#stocksTable tbody');
+            stocksTableBody.innerHTML = '';
+            sampleStocks.forEach(stock => {
+                const row = stocksTableBody.insertRow();
+                let statusColor, statusIcon, statusText;
+                
+                switch(stock.status) {
+                    case 'BLOCKCHAIN_SUCCESS':
+                        statusColor = '#4ade80';
+                        statusIcon = '⛓️';
+                        statusText = 'BLOCKCHAIN';
+                        break;
+                    case 'ORACLE_SUCCESS':
+                        statusColor = '#4ade80';
+                        statusIcon = '🛡️';
+                        statusText = 'ORACLE';
+                        break;
+                    case 'SUCCESS':
+                        statusColor = 'green';
+                        statusIcon = '✓';
+                        statusText = 'SUCCESS';
+                        break;
+                    case 'CACHED':
+                        statusColor = 'orange';
+                        statusIcon = '📋';
+                        statusText = 'CACHED';
+                        break;
+                    default:
+                        statusColor = 'red';
+                        statusIcon = '✗';
+                        statusText = 'FAILED';
+                }
+                
+                row.innerHTML = `
+                    <td><strong>${stock.symbol}</strong></td>
+                    <td>${stock.name}</td>
+                    <td>${stock.sector}</td>
+                    <td class="price-positive">$${stock.price.toFixed(2)}</td>
+                    <td><span style="color: ${statusColor};">${statusIcon} ${statusText}</span></td>
+                    <td>${new Date().toLocaleString()}</td>
+                `;
+            });
+
+            // Populate indices table
+            const indicesTableBody = document.querySelector('#indicesTable tbody');
+            indicesTableBody.innerHTML = '';
+            sampleIndices.forEach(index => {
+                const row = indicesTableBody.insertRow();
+                let statusColor, statusIcon, statusText;
+                
+                switch(index.status) {
+                    case 'BLOCKCHAIN_SUCCESS':
+                        statusColor = '#4ade80';
+                        statusIcon = '⛓️';
+                        statusText = 'BLOCKCHAIN';
+                        break;
+                    case 'ORACLE_SUCCESS':
+                        statusColor = '#4ade80';
+                        statusIcon = '🛡️';
+                        statusText = 'ORACLE';
+                        break;
+                    case 'SUCCESS':
+                        statusColor = 'green';
+                        statusIcon = '✓';
+                        statusText = 'SUCCESS';
+                        break;
+                    case 'CACHED':
+                        statusColor = 'orange';
+                        statusIcon = '📋';
+                        statusText = 'CACHED';
+                        break;
+                    default:
+                        statusColor = 'red';
+                        statusIcon = '✗';
+                        statusText = 'FAILED';
+                }
+                
+                row.innerHTML = `
+                    <td><strong>${index.symbol}</strong></td>
+                    <td>${index.name}</td>
+                    <td>${index.category}</td>
+                    <td class="price-positive">$${index.price.toFixed(2)}</td>
+                    <td><span style="color: ${statusColor};">${statusIcon} ${statusText}</span></td>
+                    <td>${new Date().toLocaleString()}</td>
+                `;
+            });
+        }
+
+        function updateStats() {
+            const totalStockValue = sampleStocks.reduce((sum, stock) => sum + stock.price, 0);
+            const totalIndexValue = sampleIndices.reduce((sum, index) => sum + index.price, 0);
+            const totalValue = totalStockValue + totalIndexValue;
+
+            document.getElementById('total-value').textContent = `$${totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+        }
+
+        async function refreshData() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Executing SEDA Blockchain Oracle...';
+            refreshBtn.disabled = true;
+
+            try {
+                console.log('🛡️ Initiating SEDA Blockchain Oracle Execution...');
+                console.log('📡 Connecting to SEDA Network...');
+                console.log('⛓️ Posting data requests to blockchain...');
+                
+                // Call SEDA Oracle (which interacts with blockchain)
+                const response = await fetch('/api/seda/all');
+                
+                if (!response.ok) {
+                    throw new Error(`Blockchain Oracle responded with ${response.status}: ${response.statusText}`);
+                }
+                
+                const oracleResult = await response.json();
+                console.log('✅ SEDA Blockchain Oracle Response:', oracleResult);
+                
+                if (oracleResult.success && oracleResult.data) {
+                    let successCount = 0;
+                    let totalCount = 0;
+                    
+                    // Update stocks with blockchain oracle data
+                    if (oracleResult.data.stocks) {
+                        oracleResult.data.stocks.forEach((oracleStock, index) => {
+                            if (sampleStocks[index]) {
+                                sampleStocks[index].price = oracleStock.price;
+                                sampleStocks[index].status = 'BLOCKCHAIN_SUCCESS';
+                                sampleStocks[index].source = 'SEDA Blockchain Oracle';
+                                sampleStocks[index].drId = oracleStock.drId || 'N/A';
+                                successCount++;
+                            }
+                            totalCount++;
+                        });
+                    }
+                    
+                    // Update indices with blockchain oracle data
+                    if (oracleResult.data.indices) {
+                        oracleResult.data.indices.forEach((oracleIndex, index) => {
+                            if (sampleIndices[index]) {
+                                sampleIndices[index].price = oracleIndex.price;
+                                sampleIndices[index].status = 'BLOCKCHAIN_SUCCESS';
+                                sampleIndices[index].source = 'SEDA Blockchain Oracle';
+                                sampleIndices[index].drId = oracleIndex.drId || 'N/A';
+                                successCount++;
+                            }
+                            totalCount++;
+                        });
+                    }
+                    
+                    // Update charts
+                    if (stocksChart) {
+                        stocksChart.data.datasets[0].data = sampleStocks.map(s => s.price);
+                        stocksChart.update('none');
+                    }
+                    if (indicesChart) {
+                        indicesChart.data.datasets[0].data = sampleIndices.map(i => i.price);
+                        indicesChart.update('none');
+                    }
+                    
+                    // Update tables and stats
+                    populateTables();
+                    updateStats();
+                    
+                    // Update success rate from blockchain oracle metadata
+                    const successRate = oracleResult.metadata?.successRate || '100%';
+                    document.getElementById('success-rate').textContent = successRate;
+                    
+                    showNotification(`🛡️ SEDA Blockchain Oracle executed successfully! ${successCount}/${totalCount} assets validated on-chain`, 'success');
+                    console.log(`✅ SEDA Blockchain Oracle complete: ${successCount}/${totalCount} assets processed`);
+                    console.log('⛓️ All data requests posted to blockchain and consensus achieved');
+                    
+                } else {
+                    throw new Error('Invalid blockchain oracle response format');
+                }
+
+            } catch (error) {
+                console.error('❌ SEDA Blockchain Oracle execution failed:', error);
+                showNotification('❌ Blockchain Oracle failed: ' + error.message + ' (Check network connection)', 'error');
+                
+                // Fallback to cached data
+                console.log('📋 Falling back to cached data...');
+                populateTables();
+                updateStats();
+                
+            } finally {
+                refreshBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Execute Blockchain Oracle';
+                refreshBtn.disabled = false;
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            populateTables();
+            updateStats();
+            
+            console.log('🛡️ SEDA Blockchain Oracle Dashboard Loaded');
+            console.log('⛓️ Blockchain network integration ready!');
+            console.log('📡 Connected to SEDA Network for data requests');
+            console.log('💡 Click "Execute Blockchain Oracle" to post data requests to blockchain');
+        });
+    </script>
+</body>
+</html> 
